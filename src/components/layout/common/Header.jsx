@@ -3,6 +3,7 @@ import React from 'react'
 import Image from 'next/image'
 //* Package Imports
 import { ArrowRight, Phone } from 'lucide-react'
+import Link from 'next/link'
 
 export const Header = () => {
     return (
@@ -10,7 +11,7 @@ export const Header = () => {
             <Image src={"/images/Logo.png"} height={43} width={153} alt='تریپ جت' />
             <div className='grid grid-cols-4 gap-8 items-center'>
                 <p>تور های داخلی</p>
-                <p>تور های خارجی</p>
+                <Link href={"/outside-tours"}>تور های خارجی</Link>
                 <p>بیمه مسافرتی</p>
                 <p>بیشتر</p>
             </div>
