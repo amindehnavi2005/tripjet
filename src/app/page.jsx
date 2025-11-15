@@ -3,22 +3,70 @@ import React from 'react'
 import Image from 'next/image'
 //* Component Imports
 import { Header } from '@/components/layout/common/Header'
+import { LandingSearchBox } from '@/components/layout/landing/LandingSearchBox'
 
 const page = () => {
   return (
     <div>
       <Header />
-      <div className='relative'>
-        <Image src={"/images/LandingBanner.png"} height={43} width={800} alt='تریپ جت' className='w-full' />
-        <div className='absolute -bottom-10 border-2 rounded-xl md:right-[25%] right-0 md:mx-28 mx-6 p-6 grid gap-14 items-center bg-white'>
-          <div className='flex items-center gap-8'>
-            <p>تور های خارجی</p>
-            <p>تور های داخلی</p>
+      <LandingSearchBox />
+      <div className='grid mt-[100px] gap-6 md:mx-28 mx-6 mb-10'>
+        <div className='flex items-center justify-between'>
+          <div className='flex items-center gap-4'>
+            <p>پیشنهادات ویژه</p>
           </div>
-          <div className='flex items-center gap-8'>
-            <input placeholder='مبدا' />
-            <input placeholder='مقصد' />
-            <button className='rounded-lg bg-blue-600 px-4 py-1 text-white'>جستجو</button>
+          <div className='flex items-center'>
+            <p className='text-blue-600'>مشاهده همه</p>
+          </div>
+        </div>
+        <div className='grid md:grid-cols-4 grid-cols-2 gap-6'>
+          <div className='grid bg-amber-100 rounded-2xl'>
+            <Image src={"/images/Ticket.png"} height={43} width={422} alt='تریپ جت' />
+            <div className='flex flex-col gap-3 p-3'>
+              <p>تور ژاپن به نا کجا آباد</p>
+              <p>8 شب و 9 روز</p>
+              <p>مهر و آبان و آذر</p>
+              <div className='flex items-center justify-between'>
+                <p>شروع قیمت از :</p>
+                <p>75,900,000</p>
+              </div>
+            </div>
+          </div>
+          <div className='grid bg-amber-100 rounded-2xl'>
+            <Image src={"/images/Ticket.png"} height={43} width={422} alt='تریپ جت' />
+            <div className='flex flex-col gap-3 p-3'>
+              <p>تور ژاپن به نا کجا آباد</p>
+              <p>8 شب و 9 روز</p>
+              <p>مهر و آبان و آذر</p>
+              <div className='flex items-center justify-between'>
+                <p>شروع قیمت از :</p>
+                <p>75,900,000</p>
+              </div>
+            </div>
+          </div>
+          <div className='grid bg-amber-100 rounded-2xl'>
+            <Image src={"/images/Ticket.png"} height={43} width={422} alt='تریپ جت' />
+            <div className='flex flex-col gap-3 p-3'>
+              <p>تور ژاپن به نا کجا آباد</p>
+              <p>8 شب و 9 روز</p>
+              <p>مهر و آبان و آذر</p>
+              <div className='flex items-center justify-between'>
+                <p>شروع قیمت از :</p>
+                <p>75,900,000</p>
+              </div>
+            </div>
+          </div>
+          <div className='grid bg-amber-100 rounded-2xl'>
+            <Image src={"/images/Ticket.png"} height={43} width={422} alt='تریپ جت' />
+            <div className='flex flex-col gap-3 p-3'>
+              <p>تور ژاپن به نا کجا آباد</p>
+              <p>8 شب و 9 روز</p>
+              <p>مهر و آبان و آذر</p>
+              <div className='flex items-center justify-between'>
+                <p>شروع قیمت از :</p>
+                <p>75,900,000</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
