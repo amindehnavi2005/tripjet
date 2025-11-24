@@ -14,7 +14,7 @@ const page = () => {
                 <div className='flex-1'>
                     <p className='shadow p-2 rounded-lg'>تعداد نتایج : 169</p>
                 </div>
-                <div className='flex-[4]'>
+                <div className='flex-4'>
                     <div className='grid grid-cols-3 gap-6 items-center'>
                         <Image src={"/images/Ticket.png"} height={43} width={317} alt='تریپ جت' className='w-full' />
                         <div className='flex flex-col gap-4'>
@@ -34,7 +34,7 @@ const page = () => {
                 <div className='flex-1'>
                     <p className='shadow p-2 rounded-lg'>تعداد نتایج : 169</p>
                 </div>
-                <div className='flex-[4]'>
+                <div className='flex-4'>
                     <div className='grid grid-cols-3 gap-6 items-center'>
                         <Image src={"/images/Ticket.png"} height={43} width={317} alt='تریپ جت' className='w-full' />
                         <div className='flex flex-col gap-4'>
@@ -54,7 +54,7 @@ const page = () => {
                 <div className='flex-1'>
                     <p className='shadow p-2 rounded-lg'>تعداد نتایج : 169</p>
                 </div>
-                <div className='flex-[4]'>
+                <div className='flex-4'>
                     <div className='grid grid-cols-3 gap-6 items-center'>
                         <Image src={"/images/Ticket.png"} height={43} width={317} alt='تریپ جت' className='w-full' />
                         <div className='flex flex-col gap-4'>
@@ -74,7 +74,7 @@ const page = () => {
                 <div className='flex-1'>
                     <p className='shadow p-2 rounded-lg'>تعداد نتایج : 169</p>
                 </div>
-                <div className='flex-[4]'>
+                <div className='flex-4'>
                     <div className='grid grid-cols-3 gap-6 items-center'>
                         <Image src={"/images/Ticket.png"} height={43} width={317} alt='تریپ جت' className='w-full' />
                         <div className='flex flex-col gap-4'>
@@ -94,7 +94,7 @@ const page = () => {
                 <div className='flex-1'>
                     <p className='shadow p-2 rounded-lg'>تعداد نتایج : 169</p>
                 </div>
-                <div className='flex-[4]'>
+                <div className='flex-4'>
                     <div className='grid grid-cols-3 gap-6 items-center'>
                         <Image src={"/images/Ticket.png"} height={43} width={317} alt='تریپ جت' className='w-full' />
                         <div className='flex flex-col gap-4'>
