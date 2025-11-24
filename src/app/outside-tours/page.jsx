@@ -31,9 +31,6 @@ const page = () => {
                 </div>
             </div>
             <div className='flex items-center mt-20 mx-6 md:mx-28 gap-6 mb-10'>
-                <div className='flex-1'>
-                    <p className='shadow p-2 rounded-lg'>تعداد نتایج : 169</p>
-                </div>
                 <div className='flex-4'>
                     <div className='grid grid-cols-3 gap-6 items-center'>
                         <Image src={"/images/Ticket.png"} height={43} width={317} alt='تریپ جت' className='w-full' />
@@ -51,9 +48,6 @@ const page = () => {
                 </div>
             </div>
             <div className='flex items-center mt-20 mx-6 md:mx-28 gap-6 mb-10'>
-                <div className='flex-1'>
-                    <p className='shadow p-2 rounded-lg'>تعداد نتایج : 169</p>
-                </div>
                 <div className='flex-4'>
                     <div className='grid grid-cols-3 gap-6 items-center'>
                         <Image src={"/images/Ticket.png"} height={43} width={317} alt='تریپ جت' className='w-full' />
@@ -71,9 +65,6 @@ const page = () => {
                 </div>
             </div>
             <div className='flex items-center mt-20 mx-6 md:mx-28 gap-6 mb-10'>
-                <div className='flex-1'>
-                    <p className='shadow p-2 rounded-lg'>تعداد نتایج : 169</p>
-                </div>
                 <div className='flex-4'>
                     <div className='grid grid-cols-3 gap-6 items-center'>
                         <Image src={"/images/Ticket.png"} height={43} width={317} alt='تریپ جت' className='w-full' />
@@ -91,9 +82,6 @@ const page = () => {
                 </div>
             </div>
             <div className='flex items-center mt-20 mx-6 md:mx-28 gap-6 mb-10'>
-                <div className='flex-1'>
-                    <p className='shadow p-2 rounded-lg'>تعداد نتایج : 169</p>
-                </div>
                 <div className='flex-4'>
                     <div className='grid grid-cols-3 gap-6 items-center'>
                         <Image src={"/images/Ticket.png"} height={43} width={317} alt='تریپ جت' className='w-full' />
