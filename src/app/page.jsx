@@ -1,19 +1,28 @@
 "use client";
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation'; // برای هدایت به صفحه جزئیات
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export default function HomePage() {
+  const router = useRouter(); // هوک نویگیشن
+
   // --- States ---
   const [pageState, setPageState] = useState('home'); // 'home' | 'results' | 'empty'
   const [searchText, setSearchText] = useState('');
   const [results, setResults] = useState([]); // نگهدارنده دیتای دریافتی از PHP
   const [loading, setLoading] = useState(false);
 
-  // آدرس بک اند PHP
+  // آدرس دقیق فایل PHP (مطمئن شو آدرس درسته)
   const API_URL = "http://localhost/tripjet-backend/search.php";
 
   // --- Functions ---
+
+  // تابع هدایت به صفحه جزئیات تور
+  const goToDetails = (id) => {
+    router.push(`/tour/${id}`);
+  };
+
   const handleSearch = async () => {
     if (!searchText.trim()) {
       alert("لطفا مقصدی را وارد کنید");
@@ -23,11 +32,11 @@ export default function HomePage() {
     setLoading(true);
 
     try {
-      // درخواست به بک اند
+      // درخواست به بک‌‌اند
       const response = await fetch(`${API_URL}?q=${searchText}`);
       const data = await response.json();
 
-      // لاجیک تغییر وضعیت صفحه بر اساس پاسخ بک اند
+      // بررسی نتیجه
       if (Array.isArray(data) && data.length > 0) {
         setResults(data);
         setPageState('results');
@@ -37,7 +46,7 @@ export default function HomePage() {
       }
     } catch (error) {
       console.error("Connection Error:", error);
-      alert("خطا در ارتباط با سرور");
+      alert("خطا در ارتباط با سرور. آیا XAMPP روشن است؟");
     } finally {
       setLoading(false);
     }
@@ -49,24 +58,23 @@ export default function HomePage() {
     setResults([]);
   };
 
-  // --- Static Data (فقط برای صفحه اصلی) ---
+  // --- Static Data (فقط برای نمایش در حالت صفحه اصلی) ---
   const offers = [
-    { id: 1, title: 'تور استانبول', price: '۱۲,۰۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=500&q=80' },
-    { id: 2, title: 'تور دبی', price: '۱۵,۵۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1512453979798-5ea90b792d50?w=500&q=80' },
-    { id: 3, title: 'تور کیش', price: '۵,۸۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1595839076088-72439a3f2824?w=500&q=80' },
-    { id: 4, title: 'تور شیراز', price: '۴,۲۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1568630046399-6e3e4a274577?w=500&q=80' },
+    { id: 101, title: 'تور استانبول', price: '۱۲,۰۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=500&q=80' },
+    { id: 102, title: 'تور دبی', price: '۱۵,۵۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1512453979798-5ea90b792d50?w=500&q=80' },
+    { id: 103, title: 'تور کیش', price: '۵,۸۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1595839076088-72439a3f2824?w=500&q=80' },
+    { id: 104, title: 'تور شیراز', price: '۴,۲۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1568630046399-6e3e4a274577?w=500&q=80' },
   ];
 
   const hotels = [
-    { id: 1, name: 'هتل اسپیناس پالاس', city: 'تهران', stars: 5, price: '۳,۵۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80' },
-    { id: 2, name: 'هتل درویشی', city: 'مشهد', stars: 5, price: '۲,۸۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500&q=80' },
-    { id: 3, name: 'هتل داریوش', city: 'کیش', stars: 4, price: '۴,۱۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&q=80' },
+    { id: 201, name: 'هتل اسپیناس پالاس', city: 'تهران', stars: 5, price: '۳,۵۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80' },
+    { id: 202, name: 'هتل درویشی', city: 'مشهد', stars: 5, price: '۲,۸۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500&q=80' },
+    { id: 203, name: 'هتل داریوش', city: 'کیش', stars: 4, price: '۴,۱۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&q=80' },
   ];
 
   return (
     <div dir="rtl" className="min-h-screen bg-gray-50 font-sans text-gray-800 flex flex-col">
 
-      {/* کامپوننت هدر */}
       <Header />
 
       {/* ================= HERO & SEARCH BOX ================= */}
@@ -89,7 +97,7 @@ export default function HomePage() {
         {/* باکس جستجو */}
         <div className="container mx-auto px-4 relative -mt-16 z-20">
           <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
-            {/* تب‌های بالای باکس */}
+            {/* تب‌ها */}
             <div className="flex gap-4 border-b pb-4 mb-4 text-sm font-medium text-gray-500 overflow-x-auto">
               <button className="text-blue-600 border-b-2 border-blue-600 pb-1 flex items-center gap-2 px-2 whitespace-nowrap">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
@@ -108,7 +116,7 @@ export default function HomePage() {
                 <input
                   type="text"
                   className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 bg-gray-50"
-                  placeholder="مثلا: تهران، کیش ('خالی' برای تست)"
+                  placeholder="جستجوی شهر (بنویسید 'خالی' برای تست)"
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
@@ -134,7 +142,7 @@ export default function HomePage() {
                   disabled={loading}
                   className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-3 rounded-lg transition shadow-md"
                 >
-                  {loading ? 'در حال جستجو...' : 'جستجو'}
+                  {loading ? '...' : 'جستجو'}
                 </button>
               </div>
             </div>
@@ -143,7 +151,6 @@ export default function HomePage() {
               <div className="mt-4 flex flex-wrap gap-2 text-xs text-gray-500 items-center">
                 <span>جستجوهای اخیر:</span>
                 <span className="bg-gray-100 px-2 py-1 rounded cursor-pointer hover:bg-gray-200">تهران به مشهد</span>
-                <span className="bg-gray-100 px-2 py-1 rounded cursor-pointer hover:bg-gray-200">تهران به کیش</span>
               </div>
             )}
           </div>
@@ -156,6 +163,8 @@ export default function HomePage() {
         {/* ---------------- STATE 1: HOME PAGE ---------------- */}
         {pageState === 'home' && (
           <div className="space-y-12">
+
+            {/* پیشنهادات ویژه */}
             <section>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold flex items-center gap-2">
@@ -166,7 +175,11 @@ export default function HomePage() {
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {offers.map((offer) => (
-                  <div key={offer.id} className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden group border border-gray-100">
+                  <div
+                    key={offer.id}
+                    onClick={() => goToDetails(offer.id)} // <-- اتصال به صفحه جزئیات
+                    className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden group border border-gray-100 cursor-pointer"
+                  >
                     <div className="relative h-40 overflow-hidden">
                       <img src={offer.image} alt={offer.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
                       <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">ویژه</span>
@@ -183,6 +196,7 @@ export default function HomePage() {
               </div>
             </section>
 
+            {/* بنر تبلیغاتی */}
             <section className="bg-blue-50 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="text-center md:text-right">
                 <h2 className="text-2xl font-bold mb-2 text-blue-800">چرا تریپ‌جت؟</h2>
@@ -193,10 +207,11 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="hidden md:block w-1/3">
-                <div className="bg-blue-200 h-40 rounded-xl flex items-center justify-center opacity-50">Image</div>
+                <div className="h-40 bg-blue-200/50 rounded-xl flex items-center justify-center text-blue-800 opacity-50">Banner Image</div>
               </div>
             </section>
 
+            {/* هتل‌ها */}
             <section>
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold flex items-center gap-2">
@@ -206,7 +221,11 @@ export default function HomePage() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {hotels.map((hotel) => (
-                  <div key={hotel.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 flex gap-4">
+                  <div
+                    key={hotel.id}
+                    onClick={() => goToDetails(hotel.id)} // <-- اتصال به صفحه جزئیات
+                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 flex gap-4 cursor-pointer hover:shadow-md transition"
+                  >
                     <img src={hotel.image} alt={hotel.name} className="w-24 h-24 rounded-lg object-cover" />
                     <div className="flex flex-col justify-between py-1 w-full">
                       <div>
@@ -236,7 +255,6 @@ export default function HomePage() {
                   <span className="font-bold text-gray-700">فیلترها</span>
                   <span className="text-xs text-red-500 cursor-pointer" onClick={handleReset}>حذف فیلترها</span>
                 </div>
-                {/* نمونه فیلتر */}
                 <div className="mb-6">
                   <label className="text-sm font-medium mb-2 block">محدوده قیمت</label>
                   <input type="range" className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
@@ -253,7 +271,7 @@ export default function HomePage() {
             {/* CONTENT AREA */}
             <div className="w-full lg:w-3/4">
 
-              {/* نمایش نتایج واقعی (از بک اند) */}
+              {/* نمایش نتایج جستجو (از بک‌اند) */}
               {pageState === 'results' && (
                 <div className="space-y-4">
                   <div className="flex justify-between items-center mb-4">
@@ -262,7 +280,11 @@ export default function HomePage() {
                   </div>
 
                   {results.map((item) => (
-                    <div key={item.id} className="bg-white rounded-xl border border-gray-200 p-4 flex flex-col md:flex-row gap-4 hover:shadow-md transition">
+                    <div
+                      key={item.id}
+                      onClick={() => goToDetails(item.id)} // <-- اتصال به صفحه جزئیات
+                      className="bg-white rounded-xl border border-gray-200 p-4 flex flex-col md:flex-row gap-4 hover:shadow-md transition cursor-pointer"
+                    >
                       <div className="w-full md:w-48 h-32 bg-gray-200 rounded-lg overflow-hidden shrink-0">
                         <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                       </div>
@@ -272,7 +294,6 @@ export default function HomePage() {
                             <h4 className="font-bold text-lg mb-1">{item.title}</h4>
                             <div className="text-xs text-gray-500 mb-2">{item.location}</div>
                             <div className="flex gap-2">
-                              {/* نمایش تگ‌هایی که از PHP آمده */}
                               {item.tags && item.tags.map((tag, idx) => (
                                 <span key={idx} className="bg-blue-50 text-blue-600 text-[10px] px-2 py-1 rounded">{tag}</span>
                               ))}
@@ -286,7 +307,7 @@ export default function HomePage() {
                           <div className="text-xs text-gray-500 flex items-center gap-1">
                             <span className="text-yellow-500 text-sm tracking-widest">{'★'.repeat(item.stars)}</span>
                           </div>
-                          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">رزرو آنلاین</button>
+                          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">مشاهده و رزرو</button>
                         </div>
                       </div>
                     </div>
@@ -318,7 +339,6 @@ export default function HomePage() {
         )}
       </main>
 
-      {/* کامپوننت فوتر */}
       <Footer />
     </div>
   );
