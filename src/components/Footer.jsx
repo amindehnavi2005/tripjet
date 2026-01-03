@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Footer() {
     return (
-        <footer className="bg-white border-t mt-12 pt-12 pb-6 text-right" dir="rtl">
+        <footer className="bg-white border-t mt-12 pt-12 pb-6">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                     <div>
@@ -24,6 +24,7 @@ export default function Footer() {
                         <ul className="text-sm text-gray-500 space-y-2">
                             <li><a href="#" className="hover:text-blue-600">مرکز راهنمایی</a></li>
                             <li><a href="#" className="hover:text-blue-600">کالای مرجوعی</a></li>
+                            <li><a href="#" className="hover:text-blue-600">انتقادات و پیشنهادات</a></li>
                         </ul>
                     </div>
                     <div>
@@ -34,8 +35,13 @@ export default function Footer() {
                         </div>
                     </div>
                 </div>
-                <div className="border-t pt-6 text-center text-xs text-gray-400">
+                <div className="border-t pt-6 text-center text-xs text-gray-400 flex flex-col md:flex-row justify-between items-center">
                     <p>کلیه حقوق این وب‌سایت محفوظ است © ۱۴۰۳</p>
+                    <div className="flex gap-4 mt-2 md:mt-0">
+                        <span>Instagram</span>
+                        <span>Twitter</span>
+                        <span>Linkedin</span>
+                    </div>
                 </div>
             </div>
         </footer>
