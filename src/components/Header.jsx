@@ -1,21 +1,23 @@
-import React from 'react';
-import Link from 'next/link';
+import Link from "next/link";
 
 export default function Header({ isLoggedIn, user, onOpenLogin }) {
     return (
-        <header className="bg-white shadow-sm sticky top-0 z-50">
-            <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-6">
-                    <Link href="/" className="text-2xl font-bold text-blue-600 flex items-center gap-2">
-                        تریپ‌جت
-                    </Link>
-                    <nav className="hidden md:flex gap-6 text-sm text-gray-600">
-                        <Link href="/" className="hover:text-blue-600">صفحه اصلی</Link>
-                        <a href="#" className="hover:text-blue-600">تورها</a>
+        <header className="bg-white shadow-sm sticky top-0 z-50 py-4">
+            <div className="container mx-auto px-4 flex items-center justify-between">
+                <div className="flex items-center gap-8">
+                    <span className="text-2xl font-black text-blue-600">تریپ جت</span>
+                    <nav className="hidden lg:flex gap-6 text-[13px] font-bold text-gray-500">
+                        <a href="#" className="hover:text-blue-600">تورهای داخلی ▾</a>
+                        <a href="#" className="hover:text-blue-600">تورهای خارجی ▾</a>
+                        <a href="#" className="hover:text-blue-600">بیمه مسافرتی</a>
+                        <a href="#" className="hover:text-blue-600">بیشتر ▾</a>
                     </nav>
                 </div>
 
                 <div className="flex items-center gap-4">
+                    <button className="p-2 text-gray-400 hover:text-blue-600"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg></button>
+                    <a href="tel:02170709797" className="hidden md:flex items-center gap-2 border px-4 py-2 rounded-xl text-blue-600 font-bold text-xs">۰۲۱۷۰۷۰۹۷۹۷ 📞</a>
+
                     {isLoggedIn ? (
                         /* نمایش نام کاربر بعد از لاگین */
                         <Link
