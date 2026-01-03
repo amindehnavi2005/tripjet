@@ -1,42 +1,39 @@
 "use client";
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation'; // برای هدایت به صفحه جزئیات
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 export default function HomePage() {
-  const router = useRouter(); // هوک نویگیشن
+  const router = useRouter();
 
-  // --- States ---
+  // --- States (جستجو و وضعیت صفحه) ---
   const [pageState, setPageState] = useState('home'); // 'home' | 'results' | 'empty'
   const [searchText, setSearchText] = useState('');
-  const [results, setResults] = useState([]); // نگهدارنده دیتای دریافتی از PHP
+  const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // آدرس دقیق فایل PHP (مطمئن شو آدرس درسته)
-  const API_URL = "http://localhost/tripjet-backend/search.php";
+  // --- States (ورود و مودال) ---
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+  const [phoneInput, setPhoneInput] = useState('');
+  const [authLoading, setAuthLoading] = useState(false);
 
-  // --- Functions ---
+  // آدرس‌های بک‌اِند PHP
+  const SEARCH_API = "http://localhost/tripjet-backend/search.php";
+  const AUTH_API = "http://localhost/tripjet-backend/auth.php";
 
-  // تابع هدایت به صفحه جزئیات تور
-  const goToDetails = (id) => {
-    router.push(`/tour/${id}`);
-  };
-
+  // --- Functions (جستجو) ---
   const handleSearch = async () => {
     if (!searchText.trim()) {
       alert("لطفا مقصدی را وارد کنید");
       return;
     }
-
     setLoading(true);
-
     try {
-      // درخواست به بک‌‌اند
-      const response = await fetch(`${API_URL}?q=${searchText}`);
+      const response = await fetch(`${SEARCH_API}?q=${searchText}`);
       const data = await response.json();
-
-      // بررسی نتیجه
       if (Array.isArray(data) && data.length > 0) {
         setResults(data);
         setPageState('results');
@@ -45,8 +42,8 @@ export default function HomePage() {
         setPageState('empty');
       }
     } catch (error) {
-      console.error("Connection Error:", error);
-      alert("خطا در ارتباط با سرور. آیا XAMPP روشن است؟");
+      console.error("Search Error:", error);
+      alert("خطا در ارتباط با سرور جستجو");
     } finally {
       setLoading(false);
     }
@@ -58,7 +55,48 @@ export default function HomePage() {
     setResults([]);
   };
 
-  // --- Static Data (فقط برای نمایش در حالت صفحه اصلی) ---
+  // --- Functions (ورود / ثبت‌نام) ---
+  const handleLoginSubmit = async () => {
+    if (phoneInput.length < 10) {
+      alert("لطفا شماره موبایل معتبر (۱۰ رقم) وارد کنید");
+      return;
+    }
+
+    setAuthLoading(true);
+    try {
+      // ارسال درخواست به auth.php
+      const response = await fetch(`${AUTH_API}?action=login&phone=${phoneInput}`);
+      const data = await response.json();
+
+      if (data.success) {
+        setIsLoggedIn(true);
+        setUser(data.user);
+        setShowLoginModal(false);
+        // ذخیره در LocalStorage برای ماندگاری (اختیاری)
+        localStorage.setItem('user', JSON.stringify(data.user));
+      } else {
+        alert(data.message || "خطا در ورود");
+      }
+    } catch (error) {
+      console.error("Auth Error:", error);
+      alert("خطا در اتصال به سرور احراز هویت");
+    } finally {
+      setAuthLoading(false);
+    }
+  };
+
+  const goToDetails = (id) => router.push(`/tour/${id}`);
+
+  // چک کردن لاگین قبلی هنگام لود صفحه
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+      setIsLoggedIn(true);
+    }
+  }, []);
+
+  // --- Static Data ---
   const offers = [
     { id: 101, title: 'تور استانبول', price: '۱۲,۰۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?w=500&q=80' },
     { id: 102, title: 'تور دبی', price: '۱۵,۵۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1512453979798-5ea90b792d50?w=500&q=80' },
@@ -66,176 +104,62 @@ export default function HomePage() {
     { id: 104, title: 'تور شیراز', price: '۴,۲۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1568630046399-6e3e4a274577?w=500&q=80' },
   ];
 
-  const hotels = [
-    { id: 201, name: 'هتل اسپیناس پالاس', city: 'تهران', stars: 5, price: '۳,۵۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=500&q=80' },
-    { id: 202, name: 'هتل درویشی', city: 'مشهد', stars: 5, price: '۲,۸۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1582719508461-905c673771fd?w=500&q=80' },
-    { id: 203, name: 'هتل داریوش', city: 'کیش', stars: 4, price: '۴,۱۰۰,۰۰۰', image: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=500&q=80' },
-  ];
-
   return (
-    <div dir="rtl" className="min-h-screen bg-gray-50 font-sans text-gray-800 flex flex-col">
+    <div dir="rtl" className="min-h-screen bg-gray-50 font-sans text-gray-800 flex flex-col relative">
 
-      <Header />
+      {/* هدر: وضعیت لاگین را به آن پاس می‌دهیم */}
+      <Header
+        isLoggedIn={isLoggedIn}
+        user={user}
+        onOpenLogin={() => setShowLoginModal(true)}
+      />
 
       {/* ================= HERO & SEARCH BOX ================= */}
       <div className="relative">
         <div className={`w-full bg-blue-900 overflow-hidden relative transition-all duration-500 ${pageState === 'home' ? 'h-[400px]' : 'h-[250px]'}`}>
-          <img
-            src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80"
-            alt="Hero"
-            className="w-full h-full object-cover opacity-60"
-          />
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4">
-            {pageState === 'home' && (
-              <h1 className="text-3xl md:text-4xl font-bold mb-4 text-center drop-shadow-md">
-                با تریپ‌جت جهان در جیب شماست!
-              </h1>
-            )}
+          <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=1200&q=80" alt="Hero" className="w-full h-full object-cover opacity-60" />
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 text-center">
+            {pageState === 'home' && <h1 className="text-3xl md:text-4xl font-bold mb-4 drop-shadow-md">با تریپ‌جت جهان در جیب شماست!</h1>}
           </div>
         </div>
 
-        {/* باکس جستجو */}
         <div className="container mx-auto px-4 relative -mt-16 z-20">
           <div className="bg-white rounded-xl shadow-lg p-4 md:p-6">
-            {/* تب‌ها */}
-            <div className="flex gap-4 border-b pb-4 mb-4 text-sm font-medium text-gray-500 overflow-x-auto">
-              <button className="text-blue-600 border-b-2 border-blue-600 pb-1 flex items-center gap-2 px-2 whitespace-nowrap">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
-                پرواز داخلی
-              </button>
-              <button className="hover:text-blue-600 flex items-center gap-2 px-2 whitespace-nowrap">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064" /></svg>
-                پرواز خارجی
-              </button>
-            </div>
-
-            {/* ورودی‌ها */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-              <div className="md:col-span-4 relative">
+              <div className="md:col-span-10 relative">
                 <label className="text-xs text-gray-500 mb-1 block">مبدا / مقصد</label>
                 <input
                   type="text"
                   className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:border-blue-500 bg-gray-50"
-                  placeholder="جستجوی شهر (بنویسید 'خالی' برای تست)"
+                  placeholder="جستجوی شهر یا کشور..."
                   value={searchText}
                   onChange={(e) => setSearchText(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
               </div>
-              <div className="md:col-span-3 relative">
-                <label className="text-xs text-gray-500 mb-1 block">تاریخ رفت</label>
-                <div className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 text-gray-600 cursor-pointer flex justify-between">
-                  <span>انتخاب تاریخ</span>
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-                </div>
-              </div>
-              <div className="md:col-span-3 relative">
-                <label className="text-xs text-gray-500 mb-1 block">مسافران</label>
-                <div className="w-full border border-gray-300 rounded-lg px-4 py-3 bg-gray-50 text-gray-600 cursor-pointer flex justify-between">
-                  <span>۱ بزرگسال</span>
-                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
-                </div>
-              </div>
               <div className="md:col-span-2">
-                <button
-                  onClick={handleSearch}
-                  disabled={loading}
-                  className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-bold py-3 rounded-lg transition shadow-md"
-                >
+                <button onClick={handleSearch} disabled={loading} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition shadow-md">
                   {loading ? '...' : 'جستجو'}
                 </button>
               </div>
             </div>
-
-            {pageState === 'home' && (
-              <div className="mt-4 flex flex-wrap gap-2 text-xs text-gray-500 items-center">
-                <span>جستجوهای اخیر:</span>
-                <span className="bg-gray-100 px-2 py-1 rounded cursor-pointer hover:bg-gray-200">تهران به مشهد</span>
-              </div>
-            )}
           </div>
         </div>
       </div>
 
       {/* ================= MAIN CONTENT ================= */}
       <main className="container mx-auto px-4 py-8 flex-grow">
-
-        {/* ---------------- STATE 1: HOME PAGE ---------------- */}
         {pageState === 'home' && (
           <div className="space-y-12">
-
-            {/* پیشنهادات ویژه */}
             <section>
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <span className="w-2 h-6 bg-blue-600 rounded-full"></span>
-                  پیشنهادهای ویژه
-                </h2>
-                <a href="#" className="text-blue-600 text-sm">مشاهده همه</a>
-              </div>
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-2"><span className="w-2 h-6 bg-blue-600 rounded-full"></span> پیشنهادهای ویژه</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {offers.map((offer) => (
-                  <div
-                    key={offer.id}
-                    onClick={() => goToDetails(offer.id)} // <-- اتصال به صفحه جزئیات
-                    className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden group border border-gray-100 cursor-pointer"
-                  >
-                    <div className="relative h-40 overflow-hidden">
-                      <img src={offer.image} alt={offer.title} className="w-full h-full object-cover group-hover:scale-105 transition duration-500" />
-                      <span className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">ویژه</span>
-                    </div>
+                  <div key={offer.id} onClick={() => goToDetails(offer.id)} className="bg-white rounded-xl shadow-sm hover:shadow-md transition overflow-hidden group border border-gray-100 cursor-pointer">
+                    <img src={offer.image} className="w-full h-40 object-cover group-hover:scale-105 transition duration-500" />
                     <div className="p-4">
                       <h3 className="font-bold mb-2">{offer.title}</h3>
-                      <div className="flex justify-between items-center text-sm">
-                        <span className="text-gray-500">شروع از</span>
-                        <span className="text-blue-600 font-bold">{offer.price} <span className="text-xs text-gray-400">تومان</span></span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            {/* بنر تبلیغاتی */}
-            <section className="bg-blue-50 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-8">
-              <div className="text-center md:text-right">
-                <h2 className="text-2xl font-bold mb-2 text-blue-800">چرا تریپ‌جت؟</h2>
-                <p className="text-gray-600 mb-4 max-w-md">پشتیبانی ۲۴ ساعته، تضمین بهترین قیمت و کنسلی آنلاین تنها بخشی از خدمات ماست.</p>
-                <div className="flex gap-4 justify-center md:justify-start">
-                  <div className="bg-white px-3 py-2 rounded shadow-sm text-xs font-medium text-green-600">تضمین قیمت</div>
-                  <div className="bg-white px-3 py-2 rounded shadow-sm text-xs font-medium text-blue-600">پشتیبانی ۲۴/۷</div>
-                </div>
-              </div>
-              <div className="hidden md:block w-1/3">
-                <div className="h-40 bg-blue-200/50 rounded-xl flex items-center justify-center text-blue-800 opacity-50">Banner Image</div>
-              </div>
-            </section>
-
-            {/* هتل‌ها */}
-            <section>
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold flex items-center gap-2">
-                  <span className="w-2 h-6 bg-orange-500 rounded-full"></span>
-                  هتل‌های محبوب
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {hotels.map((hotel) => (
-                  <div
-                    key={hotel.id}
-                    onClick={() => goToDetails(hotel.id)} // <-- اتصال به صفحه جزئیات
-                    className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 flex gap-4 cursor-pointer hover:shadow-md transition"
-                  >
-                    <img src={hotel.image} alt={hotel.name} className="w-24 h-24 rounded-lg object-cover" />
-                    <div className="flex flex-col justify-between py-1 w-full">
-                      <div>
-                        <h3 className="font-bold text-sm mb-1">{hotel.name}</h3>
-                        <span className="text-xs text-gray-500 flex items-center gap-1">{hotel.city}</span>
-                      </div>
-                      <div className="flex justify-between items-end">
-                        <div className="text-yellow-400 text-xs">{'★'.repeat(hotel.stars)}</div>
-                        <span className="text-blue-600 font-bold text-sm">{hotel.price} <small className="text-gray-400">تومان</small></span>
-                      </div>
+                      <p className="text-blue-600 font-bold text-sm">{offer.price} تومان</p>
                     </div>
                   </div>
                 ))}
@@ -244,102 +168,73 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* ---------------- STATE 2 & 3: RESULTS & EMPTY ---------------- */}
-        {(pageState === 'results' || pageState === 'empty') && (
-          <div className="flex flex-col lg:flex-row gap-6 mt-8">
-
-            {/* SIDEBAR (FILTERS) */}
-            <aside className="w-full lg:w-1/4 space-y-4">
-              <div className="bg-white border rounded-xl p-4 shadow-sm">
-                <div className="flex justify-between items-center mb-4 border-b pb-2">
-                  <span className="font-bold text-gray-700">فیلترها</span>
-                  <span className="text-xs text-red-500 cursor-pointer" onClick={handleReset}>حذف فیلترها</span>
-                </div>
-                <div className="mb-6">
-                  <label className="text-sm font-medium mb-2 block">محدوده قیمت</label>
-                  <input type="range" className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer" />
-                </div>
-                <div className="mb-6">
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" className="rounded" /> <span className="text-sm">چارتر</span></label>
-                    <label className="flex items-center gap-2 cursor-pointer"><input type="checkbox" className="rounded" /> <span className="text-sm">سیستمی</span></label>
-                  </div>
+        {pageState === 'results' && (
+          <div className="space-y-4">
+            {results.map((item) => (
+              <div key={item.id} onClick={() => goToDetails(item.id)} className="bg-white p-4 rounded-xl border flex gap-4 cursor-pointer hover:shadow-md transition">
+                <img src={item.image} className="w-32 h-32 rounded-lg object-cover" />
+                <div className="flex flex-col justify-center">
+                  <h4 className="font-bold text-lg">{item.title}</h4>
+                  <p className="text-blue-600 font-bold mt-2">{item.price} تومان</p>
                 </div>
               </div>
-            </aside>
+            ))}
+          </div>
+        )}
 
-            {/* CONTENT AREA */}
-            <div className="w-full lg:w-3/4">
-
-              {/* نمایش نتایج جستجو (از بک‌اند) */}
-              {pageState === 'results' && (
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <h3 className="font-bold text-gray-700">نتایج جستجو برای "{searchText}"</h3>
-                    <div className="text-sm text-gray-500">یافت شده: {results.length} مورد</div>
-                  </div>
-
-                  {results.map((item) => (
-                    <div
-                      key={item.id}
-                      onClick={() => goToDetails(item.id)} // <-- اتصال به صفحه جزئیات
-                      className="bg-white rounded-xl border border-gray-200 p-4 flex flex-col md:flex-row gap-4 hover:shadow-md transition cursor-pointer"
-                    >
-                      <div className="w-full md:w-48 h-32 bg-gray-200 rounded-lg overflow-hidden shrink-0">
-                        <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-                      </div>
-                      <div className="flex-grow flex flex-col justify-between">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h4 className="font-bold text-lg mb-1">{item.title}</h4>
-                            <div className="text-xs text-gray-500 mb-2">{item.location}</div>
-                            <div className="flex gap-2">
-                              {item.tags && item.tags.map((tag, idx) => (
-                                <span key={idx} className="bg-blue-50 text-blue-600 text-[10px] px-2 py-1 rounded">{tag}</span>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="flex flex-col items-end">
-                            <span className="text-blue-600 font-bold text-xl">{item.price} <span className="text-xs font-normal text-gray-500">تومان</span></span>
-                          </div>
-                        </div>
-                        <div className="flex justify-between items-center mt-4 border-t pt-3 border-dashed">
-                          <div className="text-xs text-gray-500 flex items-center gap-1">
-                            <span className="text-yellow-500 text-sm tracking-widest">{'★'.repeat(item.stars)}</span>
-                          </div>
-                          <button className="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-blue-700">مشاهده و رزرو</button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* نمایش حالت خالی */}
-              {pageState === 'empty' && (
-                <div className="bg-white rounded-xl border border-gray-200 p-12 flex flex-col items-center justify-center text-center h-full min-h-[400px]">
-                  <div className="w-48 h-48 bg-blue-50 rounded-full flex items-center justify-center mb-6">
-                    <svg className="w-24 h-24 text-blue-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-800 mb-2">نتیجه‌ای یافت نشد!</h3>
-                  <p className="text-gray-500 max-w-sm mb-6">متاسفانه برای جستجوی شما موردی پیدا نشد. لطفا عبارت دیگری را جستجو کنید.</p>
-                  <button
-                    onClick={handleReset}
-                    className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition"
-                  >
-                    بازگشت به صفحه اصلی
-                  </button>
-                </div>
-              )}
-
-            </div>
+        {pageState === 'empty' && (
+          <div className="text-center py-20 bg-white rounded-xl border">
+            <h3 className="text-xl font-bold mb-4">نتیجه‌ای یافت نشد!</h3>
+            <button onClick={handleReset} className="text-blue-600 underline">بازگشت</button>
           </div>
         )}
       </main>
 
       <Footer />
+
+      {/* ================= LOGIN MODAL (مطابق تصویر) ================= */}
+      {showLoginModal && (
+        <div className="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-3xl shadow-2xl relative overflow-hidden animate-in fade-in zoom-in duration-300">
+            {/* دکمه بستن */}
+            <button onClick={() => setShowLoginModal(false)} className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 transition">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+
+            <div className="p-10 text-center">
+              <h2 className="text-2xl font-bold text-gray-800 mb-2">ورود یا ثبت‌نام</h2>
+              <p className="text-gray-500 text-sm mb-10">برای ادامه شماره موبایل خود را وارد کنید.</p>
+
+              <div className="relative mb-8 text-right">
+                <label className="text-xs text-gray-400 absolute -top-2 right-4 bg-white px-1 z-10 font-medium">شماره موبایل</label>
+                <div className="flex items-center border-2 border-gray-100 rounded-2xl px-4 py-4 focus-within:border-blue-500 transition-all bg-gray-50/50">
+                  <span className="text-gray-400 font-bold border-l pl-3 ml-3 text-sm" dir="ltr">+۹۸</span>
+                  <input
+                    type="tel"
+                    className="w-full bg-transparent focus:outline-none text-left tracking-[0.2em] font-bold text-lg"
+                    placeholder="9123456789"
+                    value={phoneInput}
+                    onChange={(e) => setPhoneInput(e.target.value)}
+                    dir="ltr"
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handleLoginSubmit}
+                disabled={authLoading}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-2xl transition shadow-lg shadow-blue-200 text-lg"
+              >
+                {authLoading ? 'در حال تایید...' : 'تایید و ادامه'}
+              </button>
+
+              <p className="text-[11px] text-gray-400 mt-8 leading-6">
+                با ورود به تریپ‌جت، <span className="text-blue-500 underline cursor-pointer">قوانین و مقررات</span> ما را می‌پذیرید.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
